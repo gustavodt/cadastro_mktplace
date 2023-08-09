@@ -27,7 +27,11 @@ public class ViewConsultaCategoria extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private JPanel contentPane;
+
+	private JScrollPane spTable;
+
 	private JTextField edtFiltro;
+
 	private JTable tableCategoria;
 
 	private CategoriaService service;
@@ -73,14 +77,18 @@ public class ViewConsultaCategoria extends JFrame {
 		btnListar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					String filtroInformado = edtFiltro.getText().toUpperCase();
+					String filtroInformado = edtFiltro.getText();
+					
 					List<Categoria> categoriasEncontrados = service.listarPor(filtroInformado);
+					CategoriaTableModel model = new CategoriaTableModel(categoriasEncontrados);
+					tableCategoria.setModel(model);
+					configurarTabela();
 					if (categoriasEncontrados.isEmpty()) {
 						JOptionPane.showMessageDialog(contentPane,
 								"Não foi encontrado nenhum categoria com " + " esse nome.");
 					} else {
-						CategoriaTableModel model = new CategoriaTableModel(categoriasEncontrados);
-						tableCategoria.setModel(model);
+						CategoriaTableModel model1 = new CategoriaTableModel(categoriasEncontrados);
+						tableCategoria.setModel(model1);
 					}
 				} catch (Exception ex) {
 					JOptionPane.showMessageDialog(contentPane, ex.getMessage());
@@ -111,6 +119,7 @@ public class ViewConsultaCategoria extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int linhaSelecionada = tableCategoria.getSelectedRow();
 				CategoriaTableModel model = (CategoriaTableModel) tableCategoria.getModel();
+				
 				if (linhaSelecionada >= 0 && !model.isVazio()) {
 					int opcao = JOptionPane.showConfirmDialog(contentPane, "Deseja realmente remover!?", "Remoção",
 							JOptionPane.YES_NO_OPTION);
@@ -138,12 +147,16 @@ public class ViewConsultaCategoria extends JFrame {
 
 		JButton btnEditar = new JButton("Editar");
 		btnEditar.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
+
 				int linhaSelecionada = tableCategoria.getSelectedRow();
 				if (linhaSelecionada >= 0) {
+
 					CategoriaTableModel model = (CategoriaTableModel) tableCategoria.getModel();
 					Categoria categoriaSelecionado = model.getPor(linhaSelecionada);
 					ViewCadastroCategoria view = new ViewCadastroCategoria();
+					
 					view.setCategoria(categoriaSelecionado);
 					view.setVisible(true);
 					dispose();
@@ -160,4 +173,20 @@ public class ViewConsultaCategoria extends JFrame {
 		scrollPane.setBounds(12, 114, 665, 204);
 		contentPane.add(scrollPane);
 	}
+
+	private void configurarColuna(int indice, int largura) {
+		this.tableCategoria.getColumnModel().getColumn(indice).setResizable(true);
+		this.tableCategoria.getColumnModel().getColumn(indice).setPreferredWidth(largura);
+	}
+
+	private void configurarTabela() {
+		final int COLUNA_ID = 0;
+		final int COLUNA_NOME = 1;
+		this.tableCategoria.getTableHeader().setReorderingAllowed(false);
+		this.tableCategoria.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		this.configurarColuna(COLUNA_ID, 90);
+		this.configurarColuna(COLUNA_NOME, 250);
+
+	}
+
 }

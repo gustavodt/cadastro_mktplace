@@ -16,46 +16,47 @@ public class DaoPostgresRestaurante implements DaoRestaurante {
 
 	private final String INSERT = "INSERT INTO restaurantes (nome, descricao, cidade, "
 			+ "logradouro, bairro, complemento, id_categoria) VALUES (?, ?, ?, ?, ?, ?, ?)";
-	
+
 	private final String UPDATE = "UPDATE restaurantes SET nome = ?, descricao = ?, cidade = ?"
 			+ ", logradouro = ?, bairro = ?, complemento = ?, id_categoria = ? WHERE id = ?";
-	
+
 	private final String DELETE = "DELETE FROM  restaurantes WHERE id = ?";
-	
+
 	private final String SELECT_BY_ID = "SELECT r.id id_restaurante, r.nome nome_restaurante, r.descricao, "
 			+ "r.cidade, r.logradouro, r.bairro, r.complemento,"
 			+ " c.id id_categoria, c.nome nome_categoria FROM restaurantes r, categorias c"
-			+ "WHERE r.id_categoria = c.id "
-			+ "AND r.id = ?";
-	
+			+ "WHERE r.id_categoria = c.id " + "AND r.id = ?";
+
 	private final String SELECT_BY_NOME_CATEG = "SELECT r.id id_restaurante, r.nome nome_restaurante, "
 			+ "r.descricao, r.cidade, r.logradouro, r.bairro, r.complemento,"
 			+ " c.id id_categoria, c.nome nome_categoria FROM restaurantes r, categorias c"
 			+ "WHERE r.id_categoria = c.id ";
-	
+
+	private final String COUNT_BY_CATEG = "SELECT Count(*) qtde " + "FROM restaurantes r " + "WHERE r.id_categoria = ?";
+
 	private Connection conexao;
-	
+
 	public DaoPostgresRestaurante() {
 		this.conexao = ManagerDb.getInstance().getConexao();
 	}
-	
+
 	@Override
 	public void inserir(Restaurante restaurante) {
 		PreparedStatement ps = null;
-		
+
 		try {
-		
+
 			ps = conexao.prepareStatement(INSERT);
 			ps.setString(1, restaurante.getNome());
 			ps.setString(2, restaurante.getDescricao());
 			ps.setString(3, restaurante.getEndereco().getCidade());
-			ps.setString(4,  restaurante.getEndereco().getLogradouro());
+			ps.setString(4, restaurante.getEndereco().getLogradouro());
 			ps.setString(5, restaurante.getEndereco().getBairro());
 			ps.setString(6, restaurante.getEndereco().getComplemento());
 			ps.setInt(7, restaurante.getCategoria().getId());
-			
+
 			ps.execute();
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException("Ocorreu um erro ao inserir restaurante. Motivo: " + e.getMessage());
 		} finally {
@@ -67,20 +68,20 @@ public class DaoPostgresRestaurante implements DaoRestaurante {
 	@Override
 	public void alterar(Restaurante restaurante) {
 		PreparedStatement ps = null;
-		
+
 		try {
 			ManagerDb.getInstance().configurarAutocommitDa(conexao, false);
-			
+
 			ps = conexao.prepareStatement(UPDATE);
 			ps.setString(1, restaurante.getNome());
 			ps.setString(2, restaurante.getDescricao());
 			ps.setString(3, restaurante.getEndereco().getCidade());
-			ps.setString(4,  restaurante.getEndereco().getLogradouro());
+			ps.setString(4, restaurante.getEndereco().getLogradouro());
 			ps.setString(5, restaurante.getEndereco().getBairro());
 			ps.setString(6, restaurante.getEndereco().getComplemento());
 			ps.setInt(7, restaurante.getCategoria().getId());
 			ps.setInt(8, restaurante.getId());
-			
+
 			boolean isAlteracaoOK = ps.executeUpdate() == 1;
 			if (isAlteracaoOK) {
 				this.conexao.commit();
@@ -89,7 +90,7 @@ public class DaoPostgresRestaurante implements DaoRestaurante {
 			}
 			ManagerDb.getInstance().fechar(ps);
 			ps.execute();
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException("Ocorreu um erro ao alterar restaurante. Motivo: " + e.getMessage());
 		} finally {
@@ -100,14 +101,14 @@ public class DaoPostgresRestaurante implements DaoRestaurante {
 
 	@Override
 	public void excluirPor(int id) {
-PreparedStatement ps = null;
-		
+		PreparedStatement ps = null;
+
 		try {
 			ManagerDb.getInstance().configurarAutocommitDa(conexao, false);
-			
+
 			ps = conexao.prepareStatement(DELETE);
 			ps.setInt(1, id);
-			
+
 			boolean isExclusaoOK = ps.executeUpdate() == 1;
 			if (isExclusaoOK) {
 				this.conexao.commit();
@@ -116,7 +117,7 @@ PreparedStatement ps = null;
 			}
 			ManagerDb.getInstance().fechar(ps);
 			ps.execute();
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException("Ocorreu um erro ao excluir restaurante. Motivo: " + e.getMessage());
 		} finally {
@@ -127,26 +128,24 @@ PreparedStatement ps = null;
 
 	@Override
 	public Restaurante buscarPor(int id) {
-	PreparedStatement ps = null;
-	ResultSet rs = null;
-	
-	try {
-		
-		ps = conexao.prepareStatement(SELECT_BY_ID);
-		ps.setInt(1, id);
-		rs = ps.executeQuery();
-		if(rs.next()) {
-			return extrairDo(rs);
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			ps = conexao.prepareStatement(SELECT_BY_ID);
+			ps.setInt(1, id);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return extrairDo(rs);
+			}
+			return null;
+		} catch (Exception e) {
+			throw new RuntimeException("Ocorreu um erro ao buscar por resturante. Motivo: " + e.getMessage());
+		} finally {
+			ManagerDb.getInstance().fechar(ps);
+			ManagerDb.getInstance().fechar(rs);
 		}
-		return null;
-	} catch (Exception e) {
-		throw new RuntimeException("Ocorreu um erro ao buscar por resturante. Motivo: "
-				+ e.getMessage());
-	}
-	finally {
-		ManagerDb.getInstance().fechar(ps);
-		ManagerDb.getInstance().fechar(rs);
-	}
 	}
 
 	@Override
@@ -154,53 +153,49 @@ PreparedStatement ps = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Restaurante> restaurantes = new ArrayList<Restaurante>();
-		
-		
+
 		try {
-			StringBuilder consulta = new StringBuilder( SELECT_BY_NOME_CATEG);
-			
-			if(categoria != null) {
+			StringBuilder consulta = new StringBuilder(SELECT_BY_NOME_CATEG);
+
+			if (categoria != null) {
 				consulta.append(" AND c.id = ? ");
 			}
-			
+
 			if (nome != null && !nome.isBlank()) {
 				consulta.append(" AND Upper(r.nome) LIKE Upper(?) ");
 			}
-			
+
 			consulta.append(" ORDER BY r.nome ");
-			
+
 			ps = conexao.prepareStatement(consulta.toString());
-			
+
 			int indice = 1;
-			
-			
-			if(categoria != null) {
+
+			if (categoria != null) {
 				ps.setInt(indice, categoria.getId());
 				indice++;
 			}
-			
+
 			if (nome != null && nome.isBlank()) {
 				ps.setString(indice, nome);
 			}
-			
+
 			rs = ps.executeQuery();
-			
-			while(rs.next()) {
+
+			while (rs.next()) {
 				restaurantes.add(extrairDo(rs));
 			}
-			
+
 			return restaurantes;
-			
+
 		} catch (Exception e) {
-			throw new RuntimeException("Ocorreu um erro ao listar por resturante. Motivo: "
-					+ e.getMessage());
-		}
-		finally {
+			throw new RuntimeException("Ocorreu um erro ao listar por resturante. Motivo: " + e.getMessage());
+		} finally {
 			ManagerDb.getInstance().fechar(ps);
 			ManagerDb.getInstance().fechar(rs);
 		}
 	}
-	
+
 	private Restaurante extrairDo(ResultSet rs) {
 		try {
 			int idDoRestaurante = rs.getInt("id_restaurante");
@@ -210,18 +205,40 @@ PreparedStatement ps = null;
 			String logradouro = rs.getString("logradouro");
 			String bairro = rs.getString("bairro");
 			String complemento = rs.getString("complemento");
-			
+
 			int idDaCategoria = rs.getInt("id_categoria");
 			String nomeDaCategoria = rs.getString("nome_categoria");
-			
+
 			Endereco endereco = new Endereco(cidade, logradouro, bairro, complemento);
-			
+
 			Categoria categoria = new Categoria(idDaCategoria, nomeDaCategoria);
-			
+
 			return new Restaurante(idDoRestaurante, nomeDoRestaurante, descricao, endereco, categoria);
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException("Ocorreu um erro ao extrair do restaurante. Motivo: " + e.getMessage());
+		}
+	}
+
+	
+	public int contarPor(int idDaCategoria) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			ps = conexao.prepareStatement(COUNT_BY_CATEG);
+			ps.setInt(1, idDaCategoria);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("qtde");
+			}
+			return 0;
+		} catch (Exception e) {
+			throw new RuntimeException("Ocorreu um erro ao contar os resturantes.  Motivo: " + e.getMessage());
+		} finally {
+			ManagerDb.getInstance().fechar(ps);
+			ManagerDb.getInstance().fechar(rs);
 		}
 	}
 

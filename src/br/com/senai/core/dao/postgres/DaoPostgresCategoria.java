@@ -129,7 +129,7 @@ public class DaoPostgresCategoria implements DaoCategoria {
 		
 		try {
 			ps = conexao.prepareStatement(SELECT_BY_NOME);
-			ps.setString(1, nome);
+			ps.setString(2, nome);
 			rs = ps.executeQuery();
 				while(rs.next()) {
 					categorias.add(extrairDo(rs));

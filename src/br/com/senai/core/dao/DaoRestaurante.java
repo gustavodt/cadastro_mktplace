@@ -17,4 +17,6 @@ public interface DaoRestaurante {
 	
 	public List<Restaurante> listarPor(String nome, Categoria categoria);
 	
+	public int contarPor(int idDaCategoria);
+	
 }

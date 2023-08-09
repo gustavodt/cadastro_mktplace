@@ -2,7 +2,6 @@ package br.com.senai.view.categoria;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -38,10 +37,14 @@ public class ViewCadastroCategoria extends JFrame {
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		setLocationRelativeTo(null);
+		
+		this.service = new CategoriaService();
 
 		JButton btnPesquisar = new JButton("Pesquisar");
 		btnPesquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
 				ViewConsultaCategoria view = new ViewConsultaCategoria();
 				view.setVisible(true);
 				dispose();
@@ -54,6 +57,7 @@ public class ViewCadastroCategoria extends JFrame {
 		btnCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				edtNome.setText("");
+				categoria = null;
 			}
 		});
 		btnCancelar.setBounds(524, 76, 89, 23);
