@@ -5,16 +5,19 @@ import java.util.List;
 import br.com.senai.core.domain.Categoria;
 
 public interface DaoCategoria {
-
+	
 	public void inserir(Categoria categoria);
 	
 	public void alterar(Categoria categoria);
 	
-	public void excluir(int id);
+	public void excluirPor(int id);
 	
 	public Categoria buscarPor(int id);
 	
 	public List<Categoria> listarPor(String nome);
+
+	List<Categoria> listarTodas();
+
+	void excluir(int id);
 	
-	public List<Categoria> listarTodas();
 }

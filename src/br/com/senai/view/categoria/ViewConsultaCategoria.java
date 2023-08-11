@@ -1,21 +1,21 @@
 package br.com.senai.view.categoria;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import br.com.senai.core.domain.Categoria;
@@ -27,42 +27,63 @@ public class ViewConsultaCategoria extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private JPanel contentPane;
-
+	
+	private JTextField edtNome;
+	
 	private JScrollPane spTable;
-
-	private JTextField edtFiltro;
-
-	private JTable tableCategoria;
-
+	
+	private JTable tableCategorias;	
+	
 	private CategoriaService service;
 
 	/**
 	 * Create the frame.
 	 */
-	public ViewConsultaCategoria() {
-		this.service = new CategoriaService();
-		CategoriaTableModel model = new CategoriaTableModel(new ArrayList<Categoria>());
-		setTitle("Gerenciar Categoria - Listagem");
-		this.tableCategoria = new JTable(model);
-		tableCategoria.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	public ViewConsultaCategoria() {		
 		setResizable(false);
+		setName("frmConsultaCategoria");
+		setTitle("Gerenciar Categoria - Listagem");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 703, 424);
+		setBounds(100, 100, 664, 402);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-
-		JLabel lblFiltros = new JLabel("Filtros");
-		lblFiltros.setBounds(10, 11, 46, 14);
-		contentPane.add(lblFiltros);
-
+		setLocationRelativeTo(null);
+		this.service = new CategoriaService();
+		
+		JLabel lblFiltro = new JLabel("Filtros");
+		lblFiltro.setFont(new Font("Tahoma", Font.BOLD, 11));		
+		lblFiltro.setBounds(10, 39, 46, 14);
+		contentPane.add(lblFiltro);
+		
 		JLabel lblNome = new JLabel("Nome");
-		lblNome.setBounds(52, 45, 46, 14);
+		lblNome.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lblNome.setBounds(20, 64, 46, 14);
 		contentPane.add(lblNome);
-
-		JButton btnNovo = new JButton("Novo");
+		
+		edtNome = new JTextField();
+		edtNome.setBounds(76, 61, 463, 20);
+		contentPane.add(edtNome);
+		edtNome.setColumns(10);
+		
+		JButton btnListar = new JButton("Listar");		
+		btnListar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					List<Categoria> categorias = service.listarPor(edtNome.getText());
+					CategoriaTableModel model = new CategoriaTableModel(categorias);
+					tableCategorias.setModel(model);
+					configurarTabela();
+				}catch (Exception ex) {
+					JOptionPane.showMessageDialog(contentPane, ex.getMessage());
+				}
+			}
+		});
+		btnListar.setBounds(549, 60, 89, 23);
+		contentPane.add(btnListar);
+		
+		JButton btnNovo = new JButton("Novo");		
 		btnNovo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ViewCadastroCategoria view = new ViewCadastroCategoria();
@@ -70,123 +91,103 @@ public class ViewConsultaCategoria extends JFrame {
 				dispose();
 			}
 		});
-		btnNovo.setBounds(588, 7, 89, 23);
+		btnNovo.setBounds(550, 6, 89, 23);
 		contentPane.add(btnNovo);
-
-		JButton btnListar = new JButton("Listar");
-		btnListar.addActionListener(new ActionListener() {
+		
+		JLabel lblCategoriasEncontradas = new JLabel("Categorias Encontradas");
+		lblCategoriasEncontradas.setName("");
+		lblCategoriasEncontradas.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lblCategoriasEncontradas.setBounds(9, 107, 319, 14);
+		contentPane.add(lblCategoriasEncontradas);
+		
+		tableCategorias = new JTable(new CategoriaTableModel(new ArrayList<Categoria>()));
+		this.configurarTabela();
+		spTable = new JScrollPane(tableCategorias);
+		spTable.setBounds(10, 129, 628, 148);
+		contentPane.add(spTable);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(null, "A\u00E7\u00F5es", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setBounds(428, 289, 210, 62);
+		contentPane.add(panel);
+		panel.setLayout(null);
+		
+		JButton btnEditar = new JButton("Editar");		
+		btnEditar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					String filtroInformado = edtFiltro.getText();
-					
-					List<Categoria> categoriasEncontrados = service.listarPor(filtroInformado);
-					CategoriaTableModel model = new CategoriaTableModel(categoriasEncontrados);
-					tableCategoria.setModel(model);
-					configurarTabela();
-					if (categoriasEncontrados.isEmpty()) {
-						JOptionPane.showMessageDialog(contentPane,
-								"Não foi encontrado nenhum categoria com " + " esse nome.");
-					} else {
-						CategoriaTableModel model1 = new CategoriaTableModel(categoriasEncontrados);
-						tableCategoria.setModel(model1);
+					int linhaSelecionada = tableCategorias.getSelectedRow();
+					if (linhaSelecionada >= 0) {
+						CategoriaTableModel model = (CategoriaTableModel)tableCategorias.getModel();
+						Categoria categoriaSelecionada = model.getPor(linhaSelecionada);
+						ViewCadastroCategoria view = new ViewCadastroCategoria();
+						view.setCategoria(categoriaSelecionada);
+						view.setVisible(true);
+						dispose();						
+					}else {
+						JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para edição");
 					}
-				} catch (Exception ex) {
+				}catch (Exception ex) {
 					JOptionPane.showMessageDialog(contentPane, ex.getMessage());
 				}
 			}
 		});
-		btnListar.setBounds(588, 41, 89, 23);
-		contentPane.add(btnListar);
-
-		edtFiltro = new JTextField();
-		edtFiltro.setBounds(108, 42, 470, 20);
-		contentPane.add(edtFiltro);
-		edtFiltro.setColumns(10);
-
-		JLabel lblCategoriasEncontradas = new JLabel("Categorias Encontradas");
-		lblCategoriasEncontradas.setBounds(10, 84, 147, 16);
-		contentPane.add(lblCategoriasEncontradas);
-
-		JPanel panelAcoes = new JPanel();
-		panelAcoes.setToolTipText("");
-		panelAcoes.setBorder(new TitledBorder(null, "Ações", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelAcoes.setBounds(466, 330, 216, 49);
-		contentPane.add(panelAcoes);
-		panelAcoes.setLayout(null);
-
-		JButton btnExcluir = new JButton("Excluir");
+		btnEditar.setBounds(12, 27, 89, 23);
+		panel.add(btnEditar);
+		
+		JButton btnExcluir = new JButton("Excluir");		
 		btnExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int linhaSelecionada = tableCategoria.getSelectedRow();
-				CategoriaTableModel model = (CategoriaTableModel) tableCategoria.getModel();
 				
-				if (linhaSelecionada >= 0 && !model.isVazio()) {
-					int opcao = JOptionPane.showConfirmDialog(contentPane, "Deseja realmente remover!?", "Remoção",
-							JOptionPane.YES_NO_OPTION);
+				int linhaSelecionada = tableCategorias.getSelectedRow();
+				
+				if (linhaSelecionada >= 0) {
+					
+					int opcao = JOptionPane.showConfirmDialog(contentPane, "Deseja realmente excluir", 
+							"Exclusão", JOptionPane.YES_NO_OPTION);
+					
 					if (opcao == 0) {
-
-						Categoria categoriaSelecionado = model.getPor(linhaSelecionada);
+						
+						CategoriaTableModel model = (CategoriaTableModel)tableCategorias.getModel();
+						
+						Categoria categoriaSelecionada = model.getPor(linhaSelecionada);
+						
 						try {
-							service.removerPor(categoriaSelecionado.getId());
-							model.removerPor(linhaSelecionada);
-							tableCategoria.updateUI();
-							JOptionPane.showMessageDialog(contentPane, "Categoria removido com sucesso!");
-						} catch (IndexOutOfBoundsException iobe) {
-							JOptionPane.showMessageDialog(contentPane, iobe.getMessage());
-						} catch (Exception ex) {
+							service.removerPor(categoriaSelecionada.getId());
+							List<Categoria> categoriasRestantes = service.listarPor(edtNome.getText());
+							model = new CategoriaTableModel(categoriasRestantes);
+							tableCategorias.setModel(model);								
+							JOptionPane.showMessageDialog(contentPane, "Categoria removida com sucesso");
+						}catch (Exception ex) {
 							JOptionPane.showMessageDialog(contentPane, ex.getMessage());
 						}
+						
+						tableCategorias.clearSelection();
+						
 					}
-				} else {
-					JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para remoção.");
-				}
-			}
-		});
-		btnExcluir.setBounds(113, 18, 98, 26);
-		panelAcoes.add(btnExcluir);
-
-		JButton btnEditar = new JButton("Editar");
-		btnEditar.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-
-				int linhaSelecionada = tableCategoria.getSelectedRow();
-				if (linhaSelecionada >= 0) {
-
-					CategoriaTableModel model = (CategoriaTableModel) tableCategoria.getModel();
-					Categoria categoriaSelecionado = model.getPor(linhaSelecionada);
-					ViewCadastroCategoria view = new ViewCadastroCategoria();
 					
-					view.setCategoria(categoriaSelecionado);
-					view.setVisible(true);
-					dispose();
-
-				} else {
-					JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para edição.");
+				}else {
+					JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para exclusão");
 				}
+
 			}
 		});
-		btnEditar.setBounds(5, 18, 98, 26);
-		panelAcoes.add(btnEditar);
-
-		JScrollPane scrollPane = new JScrollPane(tableCategoria);
-		scrollPane.setBounds(12, 114, 665, 204);
-		contentPane.add(scrollPane);
-	}
-
+		btnExcluir.setBounds(113, 27, 89, 23);
+		panel.add(btnExcluir);
+	}	
+	
 	private void configurarColuna(int indice, int largura) {
-		this.tableCategoria.getColumnModel().getColumn(indice).setResizable(true);
-		this.tableCategoria.getColumnModel().getColumn(indice).setPreferredWidth(largura);
+		this.tableCategorias.getColumnModel().getColumn(indice).setResizable(true);
+		this.tableCategorias.getColumnModel().getColumn(indice).setPreferredWidth(largura);
 	}
-
+	
 	private void configurarTabela() {
 		final int COLUNA_ID = 0;
 		final int COLUNA_NOME = 1;
-		this.tableCategoria.getTableHeader().setReorderingAllowed(false);
-		this.tableCategoria.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.configurarColuna(COLUNA_ID, 90);
-		this.configurarColuna(COLUNA_NOME, 250);
-
+		this.tableCategorias.getTableHeader().setReorderingAllowed(false);
+		this.tableCategorias.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		this.configurarColuna(COLUNA_ID, 50);
+		this.configurarColuna(COLUNA_NOME, 550);
 	}
-
-}
+	
+}	

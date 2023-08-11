@@ -37,7 +37,7 @@ public class ViewCadastroRestaurante extends JFrame {
 	private Restaurante restaurante;
 
 	public void carregarComboCategoria() {
-		List<Categoria> categorias = categoriaService.ListarTodas();
+		List<Categoria> categorias = categoriaService.listarTodas();
 		for (Categoria ca : categorias) {
 			cbCategoria.addItem(ca);
 		}

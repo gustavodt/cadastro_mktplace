@@ -2,6 +2,6 @@ package br.com.senai.core.dao;
 
 public interface DaoHorario {
 
-		public int contarPor(int idDoRestaurante);
-
+	public int contarPor(int idDoRestaurante);
+	
 }

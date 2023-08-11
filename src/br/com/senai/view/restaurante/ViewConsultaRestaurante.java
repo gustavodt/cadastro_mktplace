@@ -37,7 +37,7 @@ public class ViewConsultaRestaurante extends JFrame {
 	private JComboBox<Categoria> cbCategoria;
 	
 	public void carregarComboCategoria() {
-		List<Categoria> categorias = categoriaService.ListarTodas();
+		List<Categoria> categorias = categoriaService.listarTodas();
 		for (Categoria ca : categorias) {
 			cbCategoria.addItem(ca);
 		}

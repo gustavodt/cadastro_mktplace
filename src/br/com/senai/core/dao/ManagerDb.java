@@ -1,4 +1,4 @@
-	package br.com.senai.core.dao;
+package br.com.senai.core.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,7 +18,7 @@ public class ManagerDb {
 					"jdbc:postgresql://containers-us-west-102.railway.app:5809/railway?currentSchema=senai", 
 					"senai", "senai@db");
 		}catch (Exception e) {
-			throw new RuntimeException("Ocorreu um erro de conexï¿½o "
+			throw new RuntimeException("Ocorreu um erro de conexão "
 					+ "com o banco de dados. Motivo: " + e.getMessage());
 		}
 	}
@@ -33,7 +33,7 @@ public class ManagerDb {
 				conexao.setAutoCommit(isHabilitado);
 			}
 		}catch (Exception e) {
-			throw new RuntimeException("Ocorreu um erro na ativacao do "
+			throw new RuntimeException("Ocorreu um erro na ativação do "
 					+ "autocommit. Motivo: " + e.getMessage());
 		}
 	}

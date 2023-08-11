@@ -12,23 +12,21 @@ import br.com.senai.core.domain.Categoria;
 
 public class DaoPostgresCategoria implements DaoCategoria {
 	
-	private final String SELECT_ALL = "SELECT c.id, c.nome"
-			+ " FROM categorias c "
-			+ " ORDER BY c.nome";
-
 	private final String INSERT = "INSERT INTO categorias (nome) VALUES (?)";
 	
 	private final String UPDATE = "UPDATE categorias SET nome = ? WHERE id = ?";
 	
 	private final String DELETE = "DELETE FROM categorias WHERE id = ?";
 	
-	private final String SELECT_BY_ID = "SELECT c.id, c.nome FROM categorias c WHERE c.id = ?";
+	private final String SELECT_BY_ID = "SELECT c.id, c.nome "
+									    + " FROM categorias c "
+									    + " WHERE c.id = ? ";
 	
-	private final String SELECT_BY_NOME = "SELECT c.id, c.nome FROM categorias c WHERE Upper(c.nome = ?) LIKE(?)"
-			+ " ORDER BY c.nome";
+	private final String SELECT_BY_NOME = "SELECT c.id, c.nome "
+			                              + " FROM categorias c "
+			                              + "WHERE Upper(c.nome) LIKE Upper(?) "
+			                              + "ORDER BY c.nome ";	
 	
-	
-
 	private Connection conexao;
 
 	public DaoPostgresCategoria() {
@@ -42,7 +40,7 @@ public class DaoPostgresCategoria implements DaoCategoria {
 			ps = conexao.prepareStatement(INSERT);
 			ps.setString(1, categoria.getNome());
 			ps.execute();
-		} catch (Exception e) {
+		}catch (Exception e) {
 			throw new RuntimeException("Ocorreu um erro ao inserir a categoria. "
 					+ "Motivo: " + e.getMessage());
 		}finally {
@@ -58,14 +56,14 @@ public class DaoPostgresCategoria implements DaoCategoria {
 			ps = conexao.prepareStatement(UPDATE);
 			ps.setString(1, categoria.getNome());
 			ps.setInt(2, categoria.getId());
-			boolean isAlteracaoOk = ps.executeUpdate() == 1;
-			if (isAlteracaoOk) {
+			boolean isAlteracaoOK = ps.executeUpdate() == 1;
+			if (isAlteracaoOK) {
 				this.conexao.commit();
-			} else {
+			}else {
 				this.conexao.rollback();
 			}
 			ManagerDb.getInstance().configurarAutocommitDa(conexao, true);
-		} catch (Exception e) {
+		}catch (Exception e) {
 			throw new RuntimeException("Ocorreu um erro ao alterar a categoria. "
 					+ "Motivo: " + e.getMessage());
 		}finally {
@@ -74,7 +72,7 @@ public class DaoPostgresCategoria implements DaoCategoria {
 	}
 
 	@Override
-	public void excluir(int id) {
+	public void excluirPor(int id) {
 		
 		PreparedStatement ps = null;
 		try {
@@ -84,26 +82,28 @@ public class DaoPostgresCategoria implements DaoCategoria {
 			ps = conexao.prepareStatement(DELETE);
 			ps.setInt(1, id);
 			boolean isExclusaoOK = ps.executeUpdate() == 1;
-			
 			if (isExclusaoOK) {
 				this.conexao.commit();
-			} else {
+			}else {
 				this.conexao.rollback();
 			}
+			
 			ManagerDb.getInstance().configurarAutocommitDa(conexao, true);
-		} catch (Exception e) {
-			throw new RuntimeException("Ocorreu um erro ao excluir a categoira. "
+			
+		}catch (Exception e) {
+			throw new RuntimeException("Ocorreu um erro ao excluir a categoria. "
 					+ "Motivo: " + e.getMessage());
-		} finally {
+		}finally {
 			ManagerDb.getInstance().fechar(ps);
 		}
+
 	}
 
 	@Override
 	public Categoria buscarPor(int id) {
+		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		
 		try {
 			ps = conexao.prepareStatement(SELECT_BY_ID);
 			ps.setInt(1, id);
@@ -111,14 +111,15 @@ public class DaoPostgresCategoria implements DaoCategoria {
 			if (rs.next()) {
 				return extrairDo(rs);
 			}
-				return null;
-		} catch (Exception e) {
-			throw new RuntimeException("Ocorreu um erro ao buscar a categoria. Motivo: " + e.getMessage());
-		}
-		 finally {
+			return null;
+		}catch (Exception e) {
+			throw new RuntimeException("Ocorreu um erro ao buscar a categoria. "
+					+ "Motivo: " + e.getMessage());
+		}finally {
 			ManagerDb.getInstance().fechar(ps);
 			ManagerDb.getInstance().fechar(rs);
 		}
+			
 	}
 
 	@Override
@@ -126,53 +127,44 @@ public class DaoPostgresCategoria implements DaoCategoria {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Categoria> categorias = new ArrayList<Categoria>();
-		
 		try {
 			ps = conexao.prepareStatement(SELECT_BY_NOME);
-			ps.setString(2, nome);
+			ps.setString(1, nome);
 			rs = ps.executeQuery();
-				while(rs.next()) {
-					categorias.add(extrairDo(rs));
-				}
-				return categorias;
-		} catch (Exception e) {
-			throw new RuntimeException("Ocorreu um erro ao listar as categorias. Motivo: " + e.getMessage());
-		} finally {
+			while (rs.next()) {
+				categorias.add(extrairDo(rs));
+			}
+			return categorias;
+		}catch (Exception e) {
+			throw new RuntimeException("Ocorreu um erro ao listar categorias. "
+					+ "Motivo: " + e.getMessage());
+		}finally {
 			ManagerDb.getInstance().fechar(ps);
 			ManagerDb.getInstance().fechar(rs);
-		}
+		}		
 	}
 	
-	private Categoria  extrairDo (ResultSet rs) {
+	private Categoria extrairDo(ResultSet rs) {
 		try {
 			int id = rs.getInt("id");
 			String nome = rs.getString("nome");
 			return new Categoria(id, nome);
-		} catch (Exception e) {
-			throw new RuntimeException("Ocorreu um erro ao extrair a categoria. Motivo: " + e.getMessage());
+		}catch (Exception e) {
+			throw new RuntimeException("Ocorreu um erro ao extrair a categoria. "
+					+ "Motivo: " + e.getMessage());
 		}
 	}
 
 	@Override
 	public List<Categoria> listarTodas() {
-		List<Categoria> categorias = new ArrayList<Categoria>();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conexao.prepareStatement(SELECT_ALL);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				categorias.add(extrairDo(rs));
-			}
-		} catch (Exception ex) {
-			throw new RuntimeException("Ocorreu um erro na listagem de categorias. Motivo "
-					+ ex.getMessage());
-		} finally {
-			ManagerDb.getInstance().fechar(ps);
-			ManagerDb.getInstance().fechar(rs);
-		}
-		return categorias;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
+	@Override
+	public void excluir(int id) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

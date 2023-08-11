@@ -6,7 +6,7 @@ import br.com.senai.core.dao.postgres.DaoPostgresRestaurante;
 
 public class FactoryDao {
 	
-	private  static  FactoryDao instance;
+	private static FactoryDao instance;
 	
 	private FactoryDao() {}
 	
@@ -18,7 +18,7 @@ public class FactoryDao {
 		return new DaoPostgresHorario();
 	}
 	
-	public DaoRestaurante getdaDaoRestaurante() {
+	public DaoRestaurante getDaoRestaurante() {
 		return new DaoPostgresRestaurante();
 	}
 	
@@ -27,5 +27,7 @@ public class FactoryDao {
 			instance = new FactoryDao();
 		}
 		return instance;
-		}
 	}
+	
+	
+}

@@ -3,32 +3,29 @@ package br.com.senai.core.domain;
 import java.util.Objects;
 
 public class Restaurante {
-
+	
 	private int id;
 	
 	private String nome;
 	
 	private String descricao;
-
+	
 	private Endereco endereco;
 	
 	private Categoria categoria;
 
-
-
-
-	public Restaurante(int id, String nome, 
-			String descricao, Endereco endereco, Categoria categoria) {
-		this(nome, descricao, endereco, categoria);
-		this.id = id;
-	}
-	
-	public Restaurante(String nome, 
-			String descricao, Endereco endereco, Categoria categoria) {
+	public Restaurante(String nome, String descricao, 
+			Endereco endereco, Categoria categoria) {		
 		this.nome = nome;
 		this.descricao = descricao;
 		this.endereco = endereco;
 		this.categoria = categoria;
+	}
+
+	public Restaurante(int id, String nome, String descricao, 
+			Endereco endereco, Categoria categoria) {
+		this(nome, descricao, endereco, categoria);
+		this.id = id;
 	}
 
 	public int getId() {
@@ -75,6 +72,7 @@ public class Restaurante {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -86,8 +84,10 @@ public class Restaurante {
 		Restaurante other = (Restaurante) obj;
 		return id == other.id;
 	}
+	
 	@Override
 	public String toString() {
 		return nome;
-	}
+	}	
+	
 }

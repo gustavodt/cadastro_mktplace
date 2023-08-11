@@ -1,20 +1,20 @@
 package br.com.senai.core.domain;
 
 public class Endereco {
-	
+
 	private String cidade;
-	
-	private String bairro;
 	
 	private String logradouro;
 	
+	private String bairro;
+	
 	private String complemento;
 
-	public Endereco(String cidade, String bairro, 
-			String logradouro, String complemento) {
+	public Endereco(String cidade, String logradouro, 
+			String bairro, String complemento) {
 		this.cidade = cidade;
-		this.bairro = bairro;
 		this.logradouro = logradouro;
+		this.bairro = bairro;
 		this.complemento = complemento;
 	}
 
@@ -26,14 +26,6 @@ public class Endereco {
 		this.cidade = cidade;
 	}
 
-	public String getBairro() {
-		return bairro;
-	}
-
-	public void setBairro(String bairro) {
-		this.bairro = bairro;
-	}
-
 	public String getLogradouro() {
 		return logradouro;
 	}
@@ -42,12 +34,20 @@ public class Endereco {
 		this.logradouro = logradouro;
 	}
 
+	public String getBairro() {
+		return bairro;
+	}
+
+	public void setBairro(String bairro) {
+		this.bairro = bairro;
+	}
+
 	public String getComplemento() {
 		return complemento;
 	}
 
 	public void setComplemento(String complemento) {
 		this.complemento = complemento;
-	}
+	}	
 	
 }
