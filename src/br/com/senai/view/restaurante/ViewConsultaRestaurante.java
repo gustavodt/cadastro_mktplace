@@ -1,9 +1,7 @@
 package br.com.senai.view.restaurante;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -15,7 +13,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import br.com.senai.core.domain.Categoria;
@@ -24,135 +24,209 @@ import br.com.senai.core.service.CategoriaService;
 import br.com.senai.core.service.RestauranteService;
 import br.com.senai.view.componentes.table.RestauranteTableModel;
 
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.awt.event.ActionEvent;
+
 public class ViewConsultaRestaurante extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	
 	private JPanel contentPane;
 	private JTextField edtNome;
-	private JTable tableRestaurante;
-	
-	private RestauranteService restauranteService;
-	private CategoriaService categoriaService;
+	private JTable tableRestaurantes;
 	private JComboBox<Categoria> cbCategoria;
 	
-	public void carregarComboCategoria() {
-		List<Categoria> categorias = categoriaService.listarTodas();
-		for (Categoria ca : categorias) {
-			cbCategoria.addItem(ca);
-		}
-	}
-
+	private RestauranteService restauranteService;
+	
+	private CategoriaService categoriaService;
+	
 	/**
 	 * Create the frame.
 	 */
 	public ViewConsultaRestaurante() {
-		this.setRestauranteService(new RestauranteService());
-		RestauranteTableModel model = new RestauranteTableModel(new ArrayList<Restaurante>());
-		setTitle("Gerenciar Restaurante - Listagem");
-		this.tableRestaurante = new JTable(model);
-		tableRestaurante.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		setTitle("Gerenciar Restaurantes - Consulta");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 700, 417);
+		setBounds(100, 100, 750, 450);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		setLocationRelativeTo(null);
 		
-		JButton btnNovo = new JButton("Novo");
-		btnNovo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ViewCadastroRestaurante view = new ViewCadastroRestaurante();
-				view.setVisible(true);
-				dispose();
-			}
-		});
-		btnNovo.setBounds(585, 11, 89, 23);
-		contentPane.add(btnNovo);
+		this.restauranteService = new RestauranteService();
+		this.categoriaService = new CategoriaService();
+		
+		JLabel lblFiltros = new JLabel("Filtros");
+		lblFiltros.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblFiltros.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblFiltros.setBounds(10, 11, 39, 33);
+		contentPane.add(lblFiltros);
+		
+		JLabel lblNome = new JLabel("Nome");
+		lblNome.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblNome.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblNome.setBounds(10, 54, 39, 33);
+		contentPane.add(lblNome);
+		
+		edtNome = new JTextField();
+		edtNome.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		edtNome.setColumns(10);
+		edtNome.setBounds(51, 58, 242, 20);
+		contentPane.add(edtNome);
 		
 		JButton btnListar = new JButton("Listar");
 		btnListar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				try {
+					
+					String nome = edtNome.getText();
+					Categoria categoria = (Categoria) cbCategoria.getSelectedItem();
+					
+					List<Restaurante> restaurantes = restauranteService.listarPor(nome, categoria);
+					RestauranteTableModel model = new RestauranteTableModel(restaurantes);
+					tableRestaurantes.setModel(model);
+					
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(contentPane, ex.getMessage());
+				}
+				
 			}
 		});
-		btnListar.setBounds(585, 45, 89, 23);
+		btnListar.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnListar.setBounds(576, 54, 147, 33);
 		contentPane.add(btnListar);
 		
-		JLabel lblFiltros = new JLabel("Filtros");
-		lblFiltros.setBounds(10, 15, 46, 14);
-		contentPane.add(lblFiltros);
+		JButton btnNovo = new JButton("Novo");
+		btnNovo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CadastroRestauranteView view = new CadastroRestauranteView();
+				view.setVisible(true);
+				dispose();
+			}
+		});
+		btnNovo.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnNovo.setBounds(576, 11, 147, 33);
+		contentPane.add(btnNovo);
 		
 		cbCategoria = new JComboBox<Categoria>();
-		cbCategoria.setBounds(420, 45, 155, 22);
+		cbCategoria.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		cbCategoria.setBounds(361, 57, 198, 22);
 		contentPane.add(cbCategoria);
 		
 		JLabel lblCategoria = new JLabel("Categoria");
-		lblCategoria.setBounds(356, 49, 54, 14);
+		lblCategoria.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblCategoria.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblCategoria.setBounds(298, 54, 62, 33);
 		contentPane.add(lblCategoria);
 		
-		edtNome = new JTextField();
-		edtNome.setBounds(57, 46, 289, 20);
-		contentPane.add(edtNome);
-		edtNome.setColumns(10);
+		JLabel lblRestaurantesEncontradas = new JLabel("Restaurantes encontrados");
+		lblRestaurantesEncontradas.setHorizontalAlignment(SwingConstants.LEFT);
+		lblRestaurantesEncontradas.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblRestaurantesEncontradas.setBounds(10, 98, 171, 33);
+		contentPane.add(lblRestaurantesEncontradas);
 		
-		JLabel lblNome = new JLabel("Nome");
-		lblNome.setBounds(20, 49, 46, 14);
-		contentPane.add(lblNome);
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 141, 713, 195);
+		contentPane.add(scrollPane);
 		
-		JLabel lblRestaurantesEncontrados = new JLabel("Restaurantes Encontrados");
-		lblRestaurantesEncontrados.setBounds(10, 77, 172, 14);
-		contentPane.add(lblRestaurantesEncontrados);
+		tableRestaurantes = new JTable();
+		scrollPane.setViewportView(tableRestaurantes);
 		
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "Ações", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel.setBounds(480, 328, 200, 45);
-		contentPane.add(panel);
-		panel.setLayout(null);
+		JPanel molduraAcoes = new JPanel();
+		molduraAcoes.setLayout(null);
+		molduraAcoes.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "A\u00E7\u00F5es", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		molduraAcoes.setBounds(407, 346, 316, 54);
+		contentPane.add(molduraAcoes);
 		
 		JButton btnExcluir = new JButton("Excluir");
 		btnExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {	
+					int linhaSelecionada = tableRestaurantes.getSelectedRow();
+					if (linhaSelecionada >= 0) {
+						int opcao = JOptionPane.showConfirmDialog(contentPane, "Deseja realmente excluir?", 
+								"Exclusão", JOptionPane.YES_NO_OPTION);
+						if (opcao == 0) {
+							RestauranteTableModel model = (RestauranteTableModel) tableRestaurantes.getModel();
+							Restaurante restauranteSelecionado = model.getPor(linhaSelecionada);
+							try {
+								restauranteService.excluirPor(restauranteSelecionado.getId());
+								model.removerPor(linhaSelecionada);
+								tableRestaurantes.updateUI();
+								JOptionPane.showMessageDialog(contentPane, "Restaurante removido com sucesso");
+							} catch (Exception ex) {
+								JOptionPane.showMessageDialog(contentPane, ex.getMessage());
+							}
+						}
+					} else {
+						JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para exclusão");
+					}
+					
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(contentPane, ex.getMessage());
+				}
 			}
 		});
-		btnExcluir.setBounds(105, 16, 89, 23);
-		panel.add(btnExcluir);
+		btnExcluir.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnExcluir.setBounds(163, 15, 147, 33);
+		molduraAcoes.add(btnExcluir);
 		
 		JButton btnEditar = new JButton("Editar");
 		btnEditar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int linhaSelecionada = tableRestaurante.getSelectedRow();
-				if (linhaSelecionada >= 0) {
-					RestauranteTableModel model = (RestauranteTableModel) tableRestaurante.getModel();
-					Restaurante restauranteSelecionado = model.getPor(linhaSelecionada);
-					ViewCadastroRestaurante view = new ViewCadastroRestaurante();
-					view.setRestaurante(restauranteSelecionado);
-					view.setVisible(true);
-					dispose();
-
-				} else {
-					JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para edição.");
-				}
+					try {
+						
+						int linhaSelecionada = tableRestaurantes.getSelectedRow();
+						if (linhaSelecionada >= 0) {
+							RestauranteTableModel model = (RestauranteTableModel) tableRestaurantes.getModel();
+							Restaurante restauranteSelecionado = model.getPor(linhaSelecionada);
+							CadastroRestauranteView view = new CadastroRestauranteView();
+							view.setRestaurante(restauranteSelecionado);
+							view.setVisible(true);
+							dispose();
+						} else {
+							JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para edição");
+						}
+						
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(contentPane, ex.getMessage());
+					}
 			}
 		});
-		btnEditar.setBounds(6, 16, 89, 23);
-		panel.add(btnEditar);
+		btnEditar.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnEditar.setBounds(6, 15, 147, 33);
+		molduraAcoes.add(btnEditar);
 		
-		JScrollPane scrollPane = new JScrollPane(tableRestaurante);
-		scrollPane.setBounds(10, 114, 664, 203);
-		contentPane.add(scrollPane);
-		
-		this.categoriaService = new CategoriaService();
 		this.carregarComboCategoria();
 	}
-
-	public RestauranteService getRestauranteService() {
-		return restauranteService;
+	
+	public void carregarComboCategoria() {
+		List<Categoria> categorias = categoriaService.listarTodas();
+		for(Categoria c : categorias) {
+			this.cbCategoria.addItem(c);			
+		}		
 	}
-
-	public void setRestauranteService(RestauranteService restauranteService) {
-		this.restauranteService = restauranteService;
+	
+	private void configurarColuna(int indice, int largura) {
+		
+		this.tableRestaurantes.getColumnModel().getColumn(indice).setResizable(false);
+		this.tableRestaurantes.getColumnModel().getColumn(indice).setPreferredWidth(largura);
+		
 	}
-
+	
+	@SuppressWarnings("unused")
+	private void configurarTabela() {
+		
+		final int COLUNA_ID = 0;
+		final int COLUNA_NOME = 1;
+		
+		this.tableRestaurantes.getTableHeader().setReorderingAllowed(false);
+		this.tableRestaurantes.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		this.configurarColuna(COLUNA_ID, 90);
+		this.configurarColuna(COLUNA_NOME, 250);
+	}
+	
 }

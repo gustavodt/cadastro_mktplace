@@ -19,6 +19,7 @@ import br.com.senai.core.domain.Endereco;
 import br.com.senai.core.domain.Restaurante;
 import br.com.senai.core.service.CategoriaService;
 import br.com.senai.core.service.RestauranteService;
+import javax.swing.border.TitledBorder;
 
 public class ViewCadastroRestaurante extends JFrame {
 
@@ -70,7 +71,7 @@ public class ViewCadastroRestaurante extends JFrame {
 		contentPane.add(btnPesquisar);
 
 		cbCategoria = new JComboBox<Categoria>();
-		cbCategoria.setBounds(401, 45, 198, 22);
+		cbCategoria.setBounds(387, 46, 198, 22);
 		contentPane.add(cbCategoria);
 
 		JLabel lblCategoria = new JLabel("Categoria");
@@ -129,57 +130,63 @@ public class ViewCadastroRestaurante extends JFrame {
 		edtComplemento.setBounds(85, 262, 514, 20);
 		contentPane.add(edtComplemento);
 		edtComplemento.setColumns(10);
+		
+		JPanel pnlSalvar = new JPanel();
+		pnlSalvar.setBorder(new TitledBorder(null, "Ações", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlSalvar.setBounds(397, 282, 216, 55);
+		contentPane.add(pnlSalvar);
+		pnlSalvar.setLayout(null);
+		
+				JButton btnCancelar = new JButton("Cancelar");
+				btnCancelar.setBounds(113, 18, 89, 23);
+				pnlSalvar.add(btnCancelar);
+				
+						JButton btnSalvar = new JButton("Salvar");
+						btnSalvar.setBounds(14, 18, 89, 23);
+						pnlSalvar.add(btnSalvar);
+						btnSalvar.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								try {
+									String nome = edtNome.getText();
+									String bairro = edtBairro.getText();
+									String logradouro = edtLogradouro.getText();
+									String cidade = edtCidade.getText();
+									String complemento = edtComplemento.getText();
+									String detalhamento = taDescricao.getText();
+									Categoria categoria = (Categoria) cbCategoria.getSelectedItem();
 
-		JButton btnCancelar = new JButton("Cancelar");
-		btnCancelar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				clearFields();
-			}
-		});
-		btnCancelar.setBounds(510, 300, 89, 23);
-		contentPane.add(btnCancelar);
+									if (nome.isEmpty() || bairro.isEmpty() || logradouro.isEmpty() || cidade.isEmpty() || complemento.isEmpty() || detalhamento.isEmpty()) {
+										JOptionPane.showMessageDialog(contentPane, "Todos os campos são obrigatórios!");
+									} else {
+										if (restaurante == null) {
+							                restaurante = new Restaurante(nome, detalhamento, new Endereco(cidade, logradouro, bairro, complemento), categoria);
+											restauranteService.salvar(restaurante);
+											JOptionPane.showMessageDialog(contentPane, "Restaurante inserido com sucesso!");
+											clearFields();
+											restaurante = null;
 
-		JButton btnSalvar = new JButton("Salvar");
-		btnSalvar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					String nome = edtNome.getText();
-					String bairro = edtBairro.getText();
-					String logradouro = edtLogradouro.getText();
-					String cidade = edtCidade.getText();
-					String complemento = edtComplemento.getText();
-					String detalhamento = taDescricao.getText();
-					Categoria categoria = (Categoria) cbCategoria.getSelectedItem();
-
-					if (nome.isEmpty() || bairro.isEmpty() || logradouro.isEmpty() || cidade.isEmpty() || complemento.isEmpty() || detalhamento.isEmpty()) {
-						JOptionPane.showMessageDialog(contentPane, "Todos os campos são obrigatórios!");
-					} else {
-						if (restaurante == null) {
-			                restaurante = new Restaurante(nome, detalhamento, new Endereco(cidade, logradouro, bairro, complemento), categoria);
-							restauranteService.salvar(restaurante);
-							JOptionPane.showMessageDialog(contentPane, "Restaurante inserido com sucesso!");
-							clearFields();
-							restaurante = null;
-
-						} else {
-							restaurante.setNome(nome);
-							restaurante.setDescricao(detalhamento);
-							restaurante.setEndereco(new Endereco(cidade, logradouro, bairro, complemento));
-							restaurante.setCategoria(categoria);
-							restauranteService.salvar(restaurante); 
-							JOptionPane.showMessageDialog(contentPane, "Restaurante alterado com sucesso!");
-						}
+										} else {
+											restaurante.setNome(nome);
+											restaurante.setDescricao(detalhamento);
+											restaurante.setEndereco(new Endereco(cidade, logradouro, bairro, complemento));
+											restaurante.setCategoria(categoria);
+											restauranteService.salvar(restaurante); 
+											JOptionPane.showMessageDialog(contentPane, "Restaurante alterado com sucesso!");
+										}
+									}
+								} catch (Exception ex) {
+									JOptionPane.showMessageDialog(contentPane, ex.getMessage());
+									if (restaurante.getId() <= 0) {
+										restaurante = null;
+									}
+								}
+							}
+						});
+				btnCancelar.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						clearFields();
 					}
-				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(contentPane, ex.getMessage());
-					if (restaurante.getId() <= 0) {
-						restaurante = null;
-					}
-				}
-			}
-		});
-		btnSalvar.setBounds(411, 300, 89, 23);
-		contentPane.add(btnSalvar);
+				});
 		this.categoriaService = new CategoriaService();
 		this.carregarComboCategoria();
 	}
