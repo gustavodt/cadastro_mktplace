@@ -12,6 +12,8 @@ public class Principal {
 		System.out.println("Conectou");
 		
 		new ViewCadastroCategoria().setVisible(true);
+		
+		System.out.println("Aplicação iniciada com sucesso");
 	}
 
 }
