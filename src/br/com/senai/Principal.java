@@ -14,6 +14,7 @@ public class Principal {
 		new ViewCadastroCategoria().setVisible(true);
 		
 		System.out.println("Aplicação iniciada com sucesso");
+		System.out.println("Aplicação iniciada corretamente");
 	}
 
 }
