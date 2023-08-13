@@ -122,7 +122,7 @@ public class ViewCadastrarHorario extends JFrame {
 				try {
 					
 					Restaurante restaurante = (Restaurante) cbRestaurante.getSelectedItem();
-					String diaSemana = cbDiaSemana.getSelectedItem().toString();
+					DiaSemana diaSemana = (DiaSemana) cbDiaSemana.getSelectedItem();
 					
 					DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
 					LocalTime horaAbertura = LocalTime.from(dtf.parse(ftfAbertura.getText()));
@@ -152,7 +152,7 @@ public class ViewCadastrarHorario extends JFrame {
 					horario = null;
 					
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(contentPane, ex.getMessage());
+					JOptionPane.showMessageDialog(contentPane, ex.getMessage() + "");
 				}
 			}
 		});
@@ -194,10 +194,11 @@ public class ViewCadastrarHorario extends JFrame {
 								horarioService.removerPor(horarioSelecionado.getId());
 								model.removerPor(linhaSelecionada);
 								tableHorarios.updateUI();
-								JOptionPane.showMessageDialog(contentPane, "Restaurante removido com sucesso");
+								JOptionPane.showMessageDialog(contentPane, "Horário do restaurante removido com sucesso");
 							} catch (Exception ex) {
 								JOptionPane.showMessageDialog(contentPane, ex.getMessage());
 							}
+							tableHorarios.clearSelection();
 						}
 					} else {
 						JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para exclusão");
@@ -275,6 +276,7 @@ public class ViewCadastrarHorario extends JFrame {
 	
 	public void carregarComboRestaurante() {
 		List<Restaurante> restaurantes = restauranteService.listarTodos();
+		this.cbRestaurante.addItem(null);
 		for(Restaurante r : restaurantes) {
 			this.cbRestaurante.addItem(r);			
 		}		
@@ -282,6 +284,7 @@ public class ViewCadastrarHorario extends JFrame {
 
 	public void carregarComboDiaSemana() {
 		DiaSemana[] diasSemana = DiaSemana.values();
+		this.cbDiaSemana.addItem(null);
 		for(DiaSemana d : diasSemana) {
 			this.cbDiaSemana.addItem(d);			
 		}		

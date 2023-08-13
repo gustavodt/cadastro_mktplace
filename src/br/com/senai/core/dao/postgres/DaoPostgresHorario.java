@@ -14,6 +14,7 @@ import br.com.senai.core.domain.Categoria;
 import br.com.senai.core.domain.Endereco;
 import br.com.senai.core.domain.HorarioAtendimento;
 import br.com.senai.core.domain.Restaurante;
+import br.com.senai.core.domain.DiaSemana;
 
 public class DaoPostgresHorario implements DaoHorario {
 	
@@ -78,7 +79,7 @@ public class DaoPostgresHorario implements DaoHorario {
 		
 		try {
 			ps = conexao.prepareStatement(INSERT);
-			ps.setString(1, horarioAtendimento.getDiaSemana());
+			ps.setString(1, horarioAtendimento.getDiaSemana().name());
 			ps.setTime(2, Time.valueOf(horarioAtendimento.getHoraAbertura()));
 			ps.setTime(3, Time.valueOf(horarioAtendimento.getHoraFechamento()));
 			ps.setInt(4, horarioAtendimento.getRestaurante().getId());
@@ -101,7 +102,7 @@ public class DaoPostgresHorario implements DaoHorario {
 			ManagerDb.getInstance().configurarAutocommitDa(conexao, false);
 			
 			ps = conexao.prepareStatement(UPDATE);
-			ps.setString(1, horarioAtendimento.getDiaSemana());
+			ps.setString(1, horarioAtendimento.getDiaSemana().name());
 			ps.setTime(2, Time.valueOf(horarioAtendimento.getHoraAbertura()));
 			ps.setTime(3, Time.valueOf(horarioAtendimento.getHoraFechamento()));
 			ps.setInt(4, horarioAtendimento.getRestaurante().getId());
@@ -246,7 +247,7 @@ public class DaoPostgresHorario implements DaoHorario {
 		try {
 			
 			int idHorarioAtendimento = rs.getInt("id_horario");
-			String diaSemana = rs.getString("dia_semana");
+			DiaSemana diaSemana = DiaSemana.valueOf(rs.getString("dia_semana"));
 			LocalTime horarioAbertura = rs.getTime("hora_abertura").toLocalTime();
 			LocalTime horarioFechamento = rs.getTime("hora_fechamento").toLocalTime();
 			
@@ -260,10 +261,10 @@ public class DaoPostgresHorario implements DaoHorario {
 			int idCategoria = rs.getInt("id_categoria");
 			String nomeCategoria = rs.getString("nome_categoria");
 			
-			Endereco endereceo = new Endereco(cidade, logradouro, bairro, complemento);
+			Endereco endereco = new Endereco(cidade, logradouro, bairro, complemento);
 			Categoria categoria = new Categoria(idCategoria, nomeCategoria);
 			
-			Restaurante restaurante = new Restaurante(idRestaurante, nomeRestaurante, descricao, endereceo, categoria);
+			Restaurante restaurante = new Restaurante(idRestaurante, nomeRestaurante, descricao, endereco, categoria);
 			
 			return new HorarioAtendimento(idHorarioAtendimento, diaSemana, horarioAbertura, horarioFechamento, restaurante);
 			

@@ -160,6 +160,7 @@ public class ViewConsultaRestaurante extends JFrame {
 							} catch (Exception ex) {
 								JOptionPane.showMessageDialog(contentPane, ex.getMessage());
 							}
+							tableRestaurantes.clearSelection();
 						}
 					} else {
 						JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para exclusão");
@@ -183,7 +184,7 @@ public class ViewConsultaRestaurante extends JFrame {
 						if (linhaSelecionada >= 0) {
 							RestauranteTableModel model = (RestauranteTableModel) tableRestaurantes.getModel();
 							Restaurante restauranteSelecionado = model.getPor(linhaSelecionada);
-							CadastroRestauranteView view = new CadastroRestauranteView();
+							ViewCadastroRestaurante view = new ViewCadastroRestaurante();
 							view.setRestaurante(restauranteSelecionado);
 							view.setVisible(true);
 							dispose();

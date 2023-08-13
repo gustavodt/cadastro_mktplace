@@ -1,5 +1,6 @@
 package br.com.senai.view.restaurante;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import br.com.senai.core.domain.Categoria;
@@ -24,41 +26,39 @@ import javax.swing.border.TitledBorder;
 public class ViewCadastroRestaurante extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-
 	private JPanel contentPane;
 	private JTextField edtNome;
+	JTextArea taDescricao;
 	private JTextField edtLogradouro;
 	private JTextField edtCidade;
-	private JTextField edtBairro;
 	private JTextField edtComplemento;
-	private JTextArea taDescricao;
-	private RestauranteService restauranteService;
-	private CategoriaService categoriaService;
+	private JTextField edtBairro;
 	private JComboBox<Categoria> cbCategoria;
+	
+	private RestauranteService restauranteService;
+	
 	private Restaurante restaurante;
-
-	public void carregarComboCategoria() {
-		List<Categoria> categorias = categoriaService.listarTodas();
-		for (Categoria ca : categorias) {
-			cbCategoria.addItem(ca);
-		}
-	}
-
+	
+	private CategoriaService categoriaService;
+	
 	/**
 	 * Create the frame.
 	 */
 	public ViewCadastroRestaurante() {
-		this.restauranteService = new RestauranteService();
-		setTitle("Gerenciar Restaurante - Cadastro");
+		setTitle("Gerenciar Restaurantes - Cadastro");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 625, 385);
+		setBounds(100, 100, 750, 465);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-
+		setLocationRelativeTo(null);
+		
+		this.restauranteService = new RestauranteService();
+		this.categoriaService = new CategoriaService();
+		
 		JButton btnPesquisar = new JButton("Pesquisar");
 		btnPesquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -67,148 +67,191 @@ public class ViewCadastroRestaurante extends JFrame {
 				dispose();
 			}
 		});
-		btnPesquisar.setBounds(492, 11, 107, 23);
+		btnPesquisar.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnPesquisar.setBounds(577, 11, 147, 33);
 		contentPane.add(btnPesquisar);
-
+		
 		cbCategoria = new JComboBox<Categoria>();
-		cbCategoria.setBounds(387, 46, 198, 22);
+		cbCategoria.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		cbCategoria.setBounds(453, 55, 242, 33);
 		contentPane.add(cbCategoria);
-
+		
 		JLabel lblCategoria = new JLabel("Categoria");
-		lblCategoria.setBounds(328, 49, 63, 14);
+		lblCategoria.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblCategoria.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblCategoria.setBounds(381, 55, 62, 33);
 		contentPane.add(lblCategoria);
-
-		JLabel lblNome = new JLabel("Nome");
-		lblNome.setBounds(38, 49, 46, 14);
-		contentPane.add(lblNome);
-
+		
 		edtNome = new JTextField();
-		edtNome.setBounds(76, 46, 242, 20);
-		contentPane.add(edtNome);
+		edtNome.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		edtNome.setColumns(10);
-
-		JLabel lblDescrição = new JLabel("Descrição");
-		lblDescrição.setBounds(10, 83, 67, 14);
-		contentPane.add(lblDescrição);
-
+		edtNome.setBounds(107, 63, 242, 20);
+		contentPane.add(edtNome);
+		
+		JLabel lblNome = new JLabel("Nome");
+		lblNome.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblNome.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblNome.setBounds(10, 57, 85, 33);
+		contentPane.add(lblNome);
+		
 		taDescricao = new JTextArea();
-		taDescricao.setBounds(86, 78, 513, 94);
+		taDescricao.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		taDescricao.setBounds(105, 99, 619, 125);
 		contentPane.add(taDescricao);
-
+		
+		JLabel lblDescricao = new JLabel("Descrição");
+		lblDescricao.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblDescricao.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblDescricao.setBounds(10, 99, 85, 33);
+		contentPane.add(lblDescricao);
+		
 		JLabel lblLogradouro = new JLabel("Logradouro");
-		lblLogradouro.setBounds(10, 191, 74, 14);
+		lblLogradouro.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblLogradouro.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblLogradouro.setBounds(10, 235, 85, 33);
 		contentPane.add(lblLogradouro);
-
+		
 		edtLogradouro = new JTextField();
-		edtLogradouro.setBounds(96, 188, 503, 20);
-		contentPane.add(edtLogradouro);
+		edtLogradouro.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		edtLogradouro.setColumns(10);
-
+		edtLogradouro.setBounds(107, 239, 619, 20);
+		contentPane.add(edtLogradouro);
+		
 		JLabel lblCidade = new JLabel("Cidade");
-		lblCidade.setBounds(25, 230, 46, 14);
+		lblCidade.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblCidade.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblCidade.setBounds(10, 279, 85, 33);
 		contentPane.add(lblCidade);
-
+		
 		edtCidade = new JTextField();
-		edtCidade.setBounds(75, 227, 255, 20);
-		contentPane.add(edtCidade);
+		edtCidade.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		edtCidade.setColumns(10);
-
-		JLabel lblBairro = new JLabel("Bairro");
-		lblBairro.setBounds(340, 230, 51, 14);
-		contentPane.add(lblBairro);
-
-		edtBairro = new JTextField();
-		edtBairro.setBounds(376, 227, 223, 20);
-		contentPane.add(edtBairro);
-		edtBairro.setColumns(10);
-
+		edtCidade.setBounds(103, 283, 266, 20);
+		contentPane.add(edtCidade);
+		
 		JLabel lblComplemento = new JLabel("Complemento");
-		lblComplemento.setBounds(0, 265, 84, 14);
+		lblComplemento.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblComplemento.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblComplemento.setBounds(10, 323, 90, 33);
 		contentPane.add(lblComplemento);
-
+		
 		edtComplemento = new JTextField();
-		edtComplemento.setBounds(85, 262, 514, 20);
-		contentPane.add(edtComplemento);
+		edtComplemento.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		edtComplemento.setColumns(10);
+		edtComplemento.setBounds(107, 327, 619, 20);
+		contentPane.add(edtComplemento);
 		
-		JPanel pnlSalvar = new JPanel();
-		pnlSalvar.setBorder(new TitledBorder(null, "Ações", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnlSalvar.setBounds(397, 282, 216, 55);
-		contentPane.add(pnlSalvar);
-		pnlSalvar.setLayout(null);
+		edtBairro = new JTextField();
+		edtBairro.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		edtBairro.setColumns(10);
+		edtBairro.setBounds(453, 283, 271, 20);
+		contentPane.add(edtBairro);
 		
-				JButton btnCancelar = new JButton("Cancelar");
-				btnCancelar.setBounds(113, 18, 89, 23);
-				pnlSalvar.add(btnCancelar);
+		JLabel lblBairro = new JLabel("Bairro");
+		lblBairro.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblBairro.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblBairro.setBounds(381, 279, 62, 33);
+		contentPane.add(lblBairro);
+		
+		JPanel pnlAções = new JPanel();
+		pnlAções.setBorder(new TitledBorder(null, "Ações", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnlAções.setBounds(396, 361, 332, 65);
+		contentPane.add(pnlAções);
+		pnlAções.setLayout(null);
+		
+		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar.setBounds(14, 18, 147, 33);
+		pnlAções.add(btnSalvar);
+		btnSalvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				
-						JButton btnSalvar = new JButton("Salvar");
-						btnSalvar.setBounds(14, 18, 89, 23);
-						pnlSalvar.add(btnSalvar);
-						btnSalvar.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								try {
-									String nome = edtNome.getText();
-									String bairro = edtBairro.getText();
-									String logradouro = edtLogradouro.getText();
-									String cidade = edtCidade.getText();
-									String complemento = edtComplemento.getText();
-									String detalhamento = taDescricao.getText();
-									Categoria categoria = (Categoria) cbCategoria.getSelectedItem();
-
-									if (nome.isEmpty() || bairro.isEmpty() || logradouro.isEmpty() || cidade.isEmpty() || complemento.isEmpty() || detalhamento.isEmpty()) {
-										JOptionPane.showMessageDialog(contentPane, "Todos os campos são obrigatórios!");
-									} else {
-										if (restaurante == null) {
-							                restaurante = new Restaurante(nome, detalhamento, new Endereco(cidade, logradouro, bairro, complemento), categoria);
-											restauranteService.salvar(restaurante);
-											JOptionPane.showMessageDialog(contentPane, "Restaurante inserido com sucesso!");
-											clearFields();
-											restaurante = null;
-
-										} else {
-											restaurante.setNome(nome);
-											restaurante.setDescricao(detalhamento);
-											restaurante.setEndereco(new Endereco(cidade, logradouro, bairro, complemento));
-											restaurante.setCategoria(categoria);
-											restauranteService.salvar(restaurante); 
-											JOptionPane.showMessageDialog(contentPane, "Restaurante alterado com sucesso!");
-										}
-									}
-								} catch (Exception ex) {
-									JOptionPane.showMessageDialog(contentPane, ex.getMessage());
-									if (restaurante.getId() <= 0) {
-										restaurante = null;
-									}
-								}
-							}
-						});
-				btnCancelar.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						clearFields();
+				try {
+					
+					String nome = edtNome.getText();
+					String descricao = taDescricao.getText();
+					String logradouro = edtLogradouro.getText();
+					String bairro = edtBairro.getText();
+					String cidade = edtCidade.getText();
+					String complemento = edtComplemento.getText();
+					Categoria categoria = (Categoria) cbCategoria.getSelectedItem();
+					
+					Endereco endereco = new Endereco(cidade, logradouro, bairro, complemento);
+					
+					if (restaurante == null) {
+						
+						restaurante = new Restaurante(nome, descricao, endereco, categoria);
+						
+					} else {
+						
+						restaurante.setNome(nome);
+						restaurante.setDescricao(descricao);
+						restaurante.setEndereco(endereco);
+						restaurante.setCategoria(categoria);
+						
 					}
-				});
-		this.categoriaService = new CategoriaService();
+
+					restauranteService.salvar(restaurante);
+					JOptionPane.showMessageDialog(contentPane, "Restaurante salvo com sucesso");
+
+					edtNome.setText(null);
+					taDescricao.setText(null);
+					edtLogradouro.setText(null);
+					edtBairro.setText(null);
+					edtCidade.setText(null);
+					edtComplemento.setText(null);
+					cbCategoria.setSelectedIndex(0);
+					restaurante = null;
+					
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(contentPane, ex.getMessage());
+				}
+				
+			}
+		});
+		btnSalvar.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		
+		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.setBounds(171, 18, 147, 33);
+		pnlAções.add(btnCancelar);
+		btnCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				edtNome.setText(null);
+				taDescricao.setText(null);
+				edtLogradouro.setText(null);
+				edtBairro.setText(null);
+				edtCidade.setText(null);
+				edtComplemento.setText(null);
+				cbCategoria.setSelectedIndex(0);
+				
+				restaurante = null;
+			}
+		});
+		btnCancelar.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		
+		cbCategoria.setBounds(453, 55, 271, 33);
+		contentPane.add(cbCategoria);
+		
 		this.carregarComboCategoria();
 	}
-
-	public void clearFields() {
-		edtNome.setText("");
-		edtBairro.setText("");
-		edtLogradouro.setText("");
-		edtCidade.setText("");
-		edtComplemento.setText("");
-		taDescricao.setText("");
-		cbCategoria.setSelectedIndex(0);
+	
+	public void carregarComboCategoria() {
+		List<Categoria> categorias = categoriaService.listarTodas();
+		this.cbCategoria.addItem(null);
+		for(Categoria c : categorias) {
+			this.cbCategoria.addItem(c);			
+		}		
 	}
 	
 	public void setRestaurante(Restaurante restaurante) {
+		
 		this.restaurante = restaurante;
 		this.edtNome.setText(restaurante.getNome());
 		this.taDescricao.setText(restaurante.getDescricao());
+		this.edtCidade.setText(restaurante.getEndereco().getCidade());
 		this.edtBairro.setText(restaurante.getEndereco().getBairro());
 		this.edtLogradouro.setText(restaurante.getEndereco().getLogradouro());
-		this.edtCidade.setText(restaurante.getEndereco().getCidade());
 		this.edtComplemento.setText(restaurante.getEndereco().getComplemento());
 		this.cbCategoria.setSelectedItem(restaurante.getCategoria());
+		
 	}
 }

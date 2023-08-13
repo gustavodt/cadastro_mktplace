@@ -127,6 +127,7 @@ public class ViewConsultaCategoria extends JFrame {
 					}else {
 						JOptionPane.showMessageDialog(contentPane, "Selecione uma linha para edição");
 					}
+					tableCategorias.clearSelection();
 				}catch (Exception ex) {
 					JOptionPane.showMessageDialog(contentPane, ex.getMessage());
 				}
